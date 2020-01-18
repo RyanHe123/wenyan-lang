@@ -1,7 +1,5 @@
-try {
-  var { num2hanzi } = require("./hanzi2num");
-  var { NUMBER_KEYWORDS, KEYWORDS } = require("./keywords");
-} catch (e) {}
+var { num2hanzi } = require("./converts/hanzi2num");
+var { NUMBER_KEYWORDS, KEYWORDS } = require("./keywords");
 
 var DEFAULT_COLORS = {
   ctrl: "#F92672",
@@ -35,15 +33,15 @@ var setTheme = function(theme) {
 };
 
 var semantic = function(txt) {
-  var off = false;
+  var off = 0;
   var out = [];
   var i = 0;
   while (i < txt.length) {
-    if (txt[i] == "「") {
-      off = true;
+    if (txt[i] == "「" || txt[i] == "『") {
+      off++;
       out.push("quot");
-    } else if (txt[i] == "」") {
-      off = false;
+    } else if (txt[i] == "」" || txt[i] == "』") {
+      off--;
       out.push("quot");
     } else {
       if (off) {
@@ -191,13 +189,11 @@ function newLineNo(ed) {
   return div;
 }
 
-try {
-  module.exports = {
-    semantic,
-    highlight,
-    newLineNo,
-    DEFAULT_COLORS,
-    newEditor,
-    setTheme
-  };
-} catch (e) {}
+module.exports = {
+  semantic,
+  highlight,
+  newLineNo,
+  DEFAULT_COLORS,
+  newEditor,
+  setTheme
+};

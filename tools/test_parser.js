@@ -13,38 +13,50 @@ function readOtherExample(x) {
 
 function runExample(lang, name) {
   var txt = fs.readFileSync("../examples/" + name + ".wy").toString();
-  var js = parser.compile(lang, txt, {
-    romanizeIdentifiers: true,
+  var sourceCode = parser.compile(lang, txt, {
+    romanizeIdentifiers: "none", //true,
     lib: utils.loadlib(),
-    reader: readOtherExample
+    reader: readOtherExample,
+    strict: true,
+    errorCallback: () => 0
+    // logCallback: ()=>0,
   });
   console.log("=== COMPILED ===");
-  console.log(js);
+  console.log(sourceCode);
   console.log("=== EVAL ===");
   switch (lang) {
     case "py":
-      console.log(utils.pyeval(js));
+      console.log(utils.pyeval(sourceCode));
       break;
     case "js":
-      eval(js);
+      parser.evalCompiled(sourceCode);
       break;
     case "rb":
-      console.log(utils.rbeval(js));
+      console.log(utils.rbeval(sourceCode));
       break;
     default:
       break;
   }
 }
 
-function runAll(lang) {
+function runAll(lang, skips = []) {
   var files = fs.readdirSync("../examples/").filter(x => x.endsWith(".wy"));
   console.log(files);
   for (var i = 0; i < files.length; i++) {
+    if (skips.includes(files[i].split(".")[0])) {
+      console.log("SKIPPED");
+      continue;
+    }
+    console.log(`======= Progress ${i + 1}/${files.length} =======`);
     runExample(lang, files[i].split(".")[0]);
   }
 }
 
-// runExample("js", "turing");
-// runAll("js");
-runExample("js", "../../../Downloads/local_test");
 // runExample("js", "import");
+// runExample("js", "../lib/js/畫譜");
+// runExample("js", "../lib/曆法");
+// runAll("js", ["quine", "quine2", "tree", "tree2", "try"]);
+// runAll("js", ["quine"]);
+
+runExample("js", "../../../Downloads/local_test");
+// runExample("py", "draw_heart");
